@@ -25,3 +25,7 @@ https://www.thecocktaildb.com/images/ingredients/<ZUTAT>-Small.png
 Beispiel: `Vodka` →  
 `https://www.thecocktaildb.com/images/ingredients/Vodka-Small.png`
 
+## 👨‍💻 Entwickelt von
+
+- **Sebastian Dendtler**
+- **Stefan Moldoveanu**
