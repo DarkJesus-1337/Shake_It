@@ -25,11 +25,3 @@ https://www.thecocktaildb.com/images/ingredients/<ZUTAT>-Small.png
 Beispiel: `Vodka` →  
 `https://www.thecocktaildb.com/images/ingredients/Vodka-Small.png`
 
-## Installation
-
-```bash
-git clone https://github.com/dein-benutzername/shake-it.git
-cd shake-it
-npm install
-npm run dev
-```
