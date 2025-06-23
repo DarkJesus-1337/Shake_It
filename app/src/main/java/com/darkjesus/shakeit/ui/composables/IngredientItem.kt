@@ -19,8 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import com.darkjesus.shakeit.utils.IngredientImageUtils
 
 @Composable
 fun IngredientItem(ingredient: String, measure: String?) {
@@ -47,11 +53,15 @@ fun IngredientItem(ingredient: String, measure: String?) {
                 Box(
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = ingredient.first().toString().uppercase(),
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                    // Bild der Zutat anzeigen statt nur den ersten Buchstaben
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(IngredientImageUtils.getSmallImageUrl(ingredient))
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = ingredient,
+                        modifier = Modifier.fillMaxWidth(),
+                        contentScale = ContentScale.Crop
                     )
                 }
             }
