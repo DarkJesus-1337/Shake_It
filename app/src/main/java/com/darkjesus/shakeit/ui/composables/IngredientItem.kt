@@ -53,7 +53,6 @@ fun IngredientItem(ingredient: String, measure: String?) {
                 Box(
                     contentAlignment = Alignment.Center
                 ) {
-                    // Bild der Zutat anzeigen statt nur den ersten Buchstaben
                     AsyncImage(
                         model = ImageRequest.Builder(LocalContext.current)
                             .data(IngredientImageUtils.getSmallImageUrl(ingredient))
