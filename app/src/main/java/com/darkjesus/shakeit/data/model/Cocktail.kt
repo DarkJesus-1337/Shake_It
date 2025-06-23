@@ -13,7 +13,6 @@ data class Cocktail(
     @Json(name = "strInstructions") val instructions: String,
     @Json(name = "strDrinkThumb") val imageUrl: String?,
 
-    // Ingredients - TheCocktailDB API returns ingredients as separate fields
     @Json(name = "strIngredient1") val ingredient1: String?,
     @Json(name = "strIngredient2") val ingredient2: String?,
     @Json(name = "strIngredient3") val ingredient3: String?,
@@ -30,7 +29,6 @@ data class Cocktail(
     @Json(name = "strIngredient14") val ingredient14: String?,
     @Json(name = "strIngredient15") val ingredient15: String?,
 
-    // Measures - same structure for measurements
     @Json(name = "strMeasure1") val measure1: String?,
     @Json(name = "strMeasure2") val measure2: String?,
     @Json(name = "strMeasure3") val measure3: String?,
@@ -47,7 +45,6 @@ data class Cocktail(
     @Json(name = "strMeasure14") val measure14: String?,
     @Json(name = "strMeasure15") val measure15: String?
 ) {
-    // Convenience properties to get clean lists
     val ingredients: List<String>
         get() = listOfNotNull(
             ingredient1, ingredient2, ingredient3, ingredient4, ingredient5,
@@ -62,7 +59,6 @@ data class Cocktail(
             measure11, measure12, measure13, measure14, measure15
         ).filter { it.isNotBlank() }
 
-    // Combined ingredients with measurements
     val ingredientsWithMeasures: List<Pair<String, String?>>
         get() {
             val ingredientsList = ingredients
