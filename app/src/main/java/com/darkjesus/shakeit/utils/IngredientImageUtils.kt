@@ -13,7 +13,7 @@ object IngredientImageUtils {
     private const val LARGE_SUFFIX = ".png"
 
     /**
-     * Generates a URL for a small-sized ingredient image.
+     * Generates a 4URL for a small-sized ingredient image.
      *
      * @param ingredientName The name of the ingredient.
      * @return URL string for the small image.

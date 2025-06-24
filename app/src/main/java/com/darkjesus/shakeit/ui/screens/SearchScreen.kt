@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,6 +29,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,6 +58,7 @@ fun SearchScreen(
     var selectedFilterLetter by remember { mutableStateOf("") }
     val alphabet = ('A'..'Z').map { it.toString() }
     var searchMode by remember { mutableIntStateOf(0) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold { paddingValues ->
         Column(
@@ -209,7 +212,9 @@ fun SearchScreen(
                     showBottomSheet = false
                     viewModel.clearSelection()
                 },
-                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+                sheetState = sheetState,
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+                modifier = Modifier.fillMaxHeight(1f)
             ) {
                 CocktailDetailBottomSheet(
                     cocktail = uiState.selectedCocktail!!,

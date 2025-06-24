@@ -6,6 +6,7 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,6 +35,7 @@ fun ShakeItApp() {
 
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedCocktail by remember { mutableStateOf<Cocktail?>(null) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
         bottomBar = {
@@ -69,6 +71,7 @@ fun ShakeItApp() {
                     showBottomSheet = false
                     selectedCocktail = null
                 },
+                sheetState = sheetState,
                 dragHandle = { BottomSheetDefaults.DragHandle() },
                 modifier = Modifier.fillMaxHeight(1f)
             ) {
