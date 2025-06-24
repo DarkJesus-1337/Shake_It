@@ -17,12 +17,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.darkjesus.shakeit.data.model.Cocktail
 import com.darkjesus.shakeit.ui.composables.CocktailCard
+import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CocktailOfTheDay(
     uiState: com.darkjesus.shakeit.ui.viewmodel.CocktailUiState,
     onCocktailClick: (Cocktail) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    viewModel: CocktailViewModel = koinViewModel()
 ) {
     Column(
         modifier = Modifier
@@ -53,7 +56,8 @@ fun CocktailOfTheDay(
             uiState.selectedCocktail != null -> {
                 CocktailCard(
                     cocktail = uiState.selectedCocktail,
-                    onClick = { onCocktailClick(uiState.selectedCocktail) }
+                    onClick = { onCocktailClick(uiState.selectedCocktail) },
+                    onFavoriteToggle = { viewModel.toggleFavorite(it) }
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))

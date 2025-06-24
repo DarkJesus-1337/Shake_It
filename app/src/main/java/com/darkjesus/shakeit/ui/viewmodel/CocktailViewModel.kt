@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.darkjesus.shakeit.data.model.Cocktail
 import com.darkjesus.shakeit.data.repository.CocktailRepository
+import com.darkjesus.shakeit.data.repository.FavoritesRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 data class CocktailUiState(
@@ -15,11 +18,14 @@ data class CocktailUiState(
     val isLoading: Boolean = false,
     val error: String? = null,
     val searchQuery: String = "",
-    val isLoadingDetails: Boolean = false
+    val isLoadingDetails: Boolean = false,
+    val favorites: List<Cocktail> = emptyList(),
+    val isLoadingFavorites: Boolean = false
 )
 
 class CocktailViewModel(
-    private val repository: CocktailRepository
+    private val cocktailRepository: CocktailRepository,
+    private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CocktailUiState())
@@ -27,6 +33,7 @@ class CocktailViewModel(
 
     init {
         getRandomCocktail()
+        loadFavorites()
     }
 
     fun searchCocktails(query: String) {
@@ -37,7 +44,7 @@ class CocktailViewModel(
         )
 
         viewModelScope.launch {
-            repository.searchCocktailsByName(query).collect { cocktails ->
+            cocktailRepository.searchCocktailsByName(query).collect { cocktails ->
                 _uiState.value = _uiState.value.copy(
                     cocktails = cocktails,
                     isLoading = false
@@ -53,7 +60,7 @@ class CocktailViewModel(
         )
 
         viewModelScope.launch {
-            repository.searchCocktailsByFirstLetter(letter).collect { cocktails ->
+            cocktailRepository.searchCocktailsByFirstLetter(letter).collect { cocktails ->
                 _uiState.value = _uiState.value.copy(
                     cocktails = cocktails,
                     isLoading = false
@@ -69,7 +76,7 @@ class CocktailViewModel(
         )
 
         viewModelScope.launch {
-            repository.getRandomCocktail().collect { cocktail ->
+            cocktailRepository.getRandomCocktail().collect { cocktail ->
                 _uiState.value = _uiState.value.copy(
                     selectedCocktail = cocktail,
                     cocktails = cocktail?.let { listOf(it) } ?: emptyList(),
@@ -91,7 +98,7 @@ class CocktailViewModel(
         _uiState.value = _uiState.value.copy(isLoadingDetails = true)
 
         viewModelScope.launch {
-            repository.getCocktailById(cocktailId).collect { detailedCocktail ->
+            cocktailRepository.getCocktailById(cocktailId).collect { detailedCocktail ->
                 if (detailedCocktail != null) {
                     _uiState.value = _uiState.value.copy(
                         selectedCocktail = detailedCocktail,
@@ -120,10 +127,60 @@ class CocktailViewModel(
         )
 
         viewModelScope.launch {
-            repository.searchCocktailsByIngredient(ingredient).collect { cocktails ->
+            cocktailRepository.searchCocktailsByIngredient(ingredient).collect { cocktails ->
                 _uiState.value = _uiState.value.copy(
                     cocktails = cocktails,
                     isLoading = false
+                )
+            }
+        }
+    }
+
+    fun loadFavorites() {
+        _uiState.value = _uiState.value.copy(isLoadingFavorites = true)
+
+        viewModelScope.launch {
+            favoritesRepository.getAllFavorites().collect { favorites ->
+                _uiState.value = _uiState.value.copy(
+                    favorites = favorites,
+                    isLoadingFavorites = false
+                )
+            }
+        }
+    }
+
+    fun toggleFavorite(cocktail: Cocktail) {
+        viewModelScope.launch {
+            try {
+                val isFavorite = favoritesRepository.isFavorite(cocktail.id).first()
+
+                if (isFavorite) {
+                    favoritesRepository.removeFromFavorites(cocktail.id)
+                } else {
+                    favoritesRepository.addToFavorites(cocktail)
+                }
+
+                loadFavorites()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to update favorites: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun isFavorite(cocktailId: String): Flow<Boolean> {
+        return favoritesRepository.isFavorite(cocktailId)
+    }
+
+    fun clearAllFavorites() {
+        viewModelScope.launch {
+            try {
+                favoritesRepository.clearAllFavorites()
+                loadFavorites()
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to clear favorites: ${e.message}"
                 )
             }
         }

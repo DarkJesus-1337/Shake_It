@@ -7,11 +7,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import com.darkjesus.shakeit.data.model.Cocktail
+import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun CocktailList(
     cocktails: List<Cocktail>,
-    onCocktailClick: (Cocktail) -> Unit
+    onCocktailClick: (Cocktail) -> Unit,
+    viewModel: CocktailViewModel = koinViewModel()
 ) {
     LazyColumn(
         contentPadding = PaddingValues(vertical = 8.dp),
@@ -20,7 +23,8 @@ fun CocktailList(
         items(cocktails) { cocktail ->
             CocktailCard(
                 cocktail = cocktail,
-                onClick = { onCocktailClick(cocktail) }
+                onClick = { onCocktailClick(cocktail) },
+                onFavoriteToggle = { viewModel.toggleFavorite(it) }
             )
         }
     }
