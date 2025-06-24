@@ -39,9 +39,20 @@ class CocktailRepository(
     fun searchCocktailsByIngredient(ingredient: String): Flow<List<Cocktail>> = flow {
         try {
             val response = apiService.searchCocktailsByIngredient(ingredient)
-            emit(response.drinks ?: emptyList())
+            val cocktails = response.drinks ?: emptyList()
+            emit(cocktails)
         } catch (e: Exception) {
             emit(emptyList())
+        }
+    }
+
+    fun getCocktailById(id: String): Flow<Cocktail?> = flow {
+        try {
+            val response = apiService.getCocktailById(id)
+            val cocktail = response.drinks?.firstOrNull()
+            emit(cocktail)
+        } catch (e: Exception) {
+            emit(null)
         }
     }
 }

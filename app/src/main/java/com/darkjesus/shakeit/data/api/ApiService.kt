@@ -31,6 +31,8 @@ interface ApiService {
     @GET("filter.php")
     suspend fun searchCocktailsByIngredient(@Query("i") ingredient: String): CocktailResponse
 
+    @GET("lookup.php")
+    suspend fun getCocktailById(@Query("i") id: String): CocktailResponse
 }
 
 object CocktailAPI {

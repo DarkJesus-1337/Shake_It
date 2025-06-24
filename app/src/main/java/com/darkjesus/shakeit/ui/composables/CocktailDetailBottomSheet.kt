@@ -1,4 +1,7 @@
+package com.darkjesus.shakeit.ui.composables
+
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,9 +12,13 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -24,11 +31,29 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.darkjesus.shakeit.data.model.Cocktail
-import com.darkjesus.shakeit.ui.composables.InfoChip
-import com.darkjesus.shakeit.ui.composables.IngredientItem
+import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
 
 @Composable
-fun CocktailDetailBottomSheet(cocktail: Cocktail) {
+fun CocktailDetailBottomSheet(
+    cocktail: Cocktail,
+    viewModel: CocktailViewModel
+) {
+    val uiState by viewModel.uiState.collectAsState()
+
+    if (uiState.isLoadingDetails) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+        return
+    }
+
+    val displayCocktail = uiState.selectedCocktail ?: cocktail
+
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,10 +63,10 @@ fun CocktailDetailBottomSheet(cocktail: Cocktail) {
         item {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(cocktail.imageUrl)
+                    .data(displayCocktail.imageUrl)
                     .crossfade(true)
                     .build(),
-                contentDescription = cocktail.name,
+                contentDescription = displayCocktail.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
@@ -52,7 +77,7 @@ fun CocktailDetailBottomSheet(cocktail: Cocktail) {
 
         item {
             Text(
-                text = cocktail.name,
+                text = displayCocktail.name,
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
@@ -66,9 +91,9 @@ fun CocktailDetailBottomSheet(cocktail: Cocktail) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                InfoChip(label = "Category", value = cocktail.category)
-                InfoChip(label = "Type", value = cocktail.alcoholic)
-                InfoChip(label = "Glass", value = cocktail.glass)
+                displayCocktail.category?.let { InfoChip(label = "Category", value = it) }
+                displayCocktail.alcoholic?.let { InfoChip(label = "Type", value = it) }
+                displayCocktail.glass?.let { InfoChip(label = "Glass", value = it) }
             }
         }
 
@@ -82,11 +107,22 @@ fun CocktailDetailBottomSheet(cocktail: Cocktail) {
             )
         }
 
-        items(cocktail.ingredientsWithMeasures) { (ingredient, measure) ->
-            IngredientItem(
-                ingredient = ingredient,
-                measure = measure
-            )
+        if (displayCocktail.ingredientsWithMeasures.isEmpty()) {
+            item {
+                Text(
+                    text = "Loading ingredients...",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(8.dp)
+                )
+            }
+        } else {
+            items(displayCocktail.ingredientsWithMeasures) { (ingredient, measure) ->
+                IngredientItem(
+                    ingredient = ingredient,
+                    measure = measure
+                )
+            }
         }
 
         item {
@@ -107,8 +143,11 @@ fun CocktailDetailBottomSheet(cocktail: Cocktail) {
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
+                val instructionsText = displayCocktail.instructions?.takeIf { it.isNotEmpty() }
+                    ?: "Loading instructions..."
+
                 Text(
-                    text = cocktail.instructions,
+                    text = instructionsText,
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(16.dp),

@@ -1,6 +1,5 @@
 package com.darkjesus.shakeit.ui.navigation
 
-import CocktailDetailBottomSheet
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.BottomSheetDefaults
@@ -19,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.darkjesus.shakeit.data.model.Cocktail
 import com.darkjesus.shakeit.ui.composables.BottomNavigationBar
+import com.darkjesus.shakeit.ui.composables.CocktailDetailBottomSheet
 import com.darkjesus.shakeit.ui.screens.CocktailOfTheDay
 import com.darkjesus.shakeit.ui.screens.FavoritesScreen
 import com.darkjesus.shakeit.ui.screens.SearchScreen
@@ -72,19 +72,11 @@ fun ShakeItApp() {
                 dragHandle = { BottomSheetDefaults.DragHandle() },
                 modifier = Modifier.fillMaxHeight(1f)
             ) {
-                CocktailDetailBottomSheet(cocktail = selectedCocktail!!)
+                CocktailDetailBottomSheet(
+                    cocktail = selectedCocktail!!,
+                    viewModel = viewModel
+                )
             }
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-

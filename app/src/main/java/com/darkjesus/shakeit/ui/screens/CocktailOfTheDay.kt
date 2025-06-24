@@ -49,6 +49,7 @@ fun CocktailOfTheDay(
                     )
                 }
             }
+
             uiState.selectedCocktail != null -> {
                 CocktailCard(
                     cocktail = uiState.selectedCocktail,
@@ -64,6 +65,7 @@ fun CocktailOfTheDay(
                     Text("🎲 Get Another Random Cocktail")
                 }
             }
+
             else -> {
                 Text(
                     text = "No cocktail available",

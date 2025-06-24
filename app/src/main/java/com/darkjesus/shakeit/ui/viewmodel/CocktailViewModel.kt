@@ -14,7 +14,8 @@ data class CocktailUiState(
     val selectedCocktail: Cocktail? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val isLoadingDetails: Boolean = false
 )
 
 class CocktailViewModel(
@@ -80,6 +81,27 @@ class CocktailViewModel(
 
     fun selectCocktail(cocktail: Cocktail) {
         _uiState.value = _uiState.value.copy(selectedCocktail = cocktail)
+
+        if (cocktail.instructions.isNullOrEmpty() || cocktail.ingredients.isEmpty()) {
+            loadCocktailDetails(cocktail.id)
+        }
+    }
+
+    private fun loadCocktailDetails(cocktailId: String) {
+        _uiState.value = _uiState.value.copy(isLoadingDetails = true)
+
+        viewModelScope.launch {
+            repository.getCocktailById(cocktailId).collect { detailedCocktail ->
+                if (detailedCocktail != null) {
+                    _uiState.value = _uiState.value.copy(
+                        selectedCocktail = detailedCocktail,
+                        isLoadingDetails = false
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(isLoadingDetails = false)
+                }
+            }
+        }
     }
 
     fun clearSelection() {
@@ -88,5 +110,22 @@ class CocktailViewModel(
 
     fun updateSearchQuery(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
+    }
+
+    fun searchCocktailsByIngredient(ingredient: String) {
+        _uiState.value = _uiState.value.copy(
+            searchQuery = ingredient,
+            isLoading = true,
+            error = null
+        )
+
+        viewModelScope.launch {
+            repository.searchCocktailsByIngredient(ingredient).collect { cocktails ->
+                _uiState.value = _uiState.value.copy(
+                    cocktails = cocktails,
+                    isLoading = false
+                )
+            }
+        }
     }
 }
