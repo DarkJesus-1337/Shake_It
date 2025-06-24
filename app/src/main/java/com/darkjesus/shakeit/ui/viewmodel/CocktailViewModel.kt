@@ -12,6 +12,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
+/**
+ * Data class representing the UI state for cocktail-related screens.
+ *
+ * @property cocktails List of cocktails currently displayed.
+ * @property selectedCocktail Currently selected cocktail for detailed view.
+ * @property isLoading Indicates whether cocktails are currently being loaded.
+ * @property error Error message to be displayed, if any.
+ * @property searchQuery Current search query string.
+ * @property isLoadingDetails Indicates whether detailed cocktail information is being loaded.
+ * @property favorites List of favorite cocktails.
+ * @property isLoadingFavorites Indicates whether favorites are currently being loaded.
+ */
 data class CocktailUiState(
     val cocktails: List<Cocktail> = emptyList(),
     val selectedCocktail: Cocktail? = null,
@@ -23,12 +35,24 @@ data class CocktailUiState(
     val isLoadingFavorites: Boolean = false
 )
 
+/**
+ * ViewModel that manages cocktail data and user interactions.
+ *
+ * Handles cocktail search, selection, favorites management, and maintains the UI state.
+ *
+ * @property cocktailRepository Repository for fetching cocktail data from the API.
+ * @property favoritesRepository Repository for managing favorite cocktails in local storage.
+ */
 class CocktailViewModel(
     private val cocktailRepository: CocktailRepository,
     private val favoritesRepository: FavoritesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CocktailUiState())
+
+    /**
+     * Observable UI state for the cocktail screens.
+     */
     val uiState: StateFlow<CocktailUiState> = _uiState.asStateFlow()
 
     init {
@@ -36,6 +60,11 @@ class CocktailViewModel(
         loadFavorites()
     }
 
+    /**
+     * Searches for cocktails by name.
+     *
+     * @param query The name or partial name to search for.
+     */
     fun searchCocktails(query: String) {
         _uiState.value = _uiState.value.copy(
             searchQuery = query,
@@ -53,6 +82,11 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Searches for cocktails by their first letter.
+     *
+     * @param letter The letter to search for.
+     */
     fun searchByFirstLetter(letter: String) {
         _uiState.value = _uiState.value.copy(
             isLoading = true,
@@ -69,6 +103,9 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Fetches a random cocktail from the API.
+     */
     fun getRandomCocktail() {
         _uiState.value = _uiState.value.copy(
             isLoading = true,
@@ -86,6 +123,11 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Sets the currently selected cocktail and loads its details if needed.
+     *
+     * @param cocktail The cocktail to select.
+     */
     fun selectCocktail(cocktail: Cocktail) {
         _uiState.value = _uiState.value.copy(selectedCocktail = cocktail)
 
@@ -94,6 +136,11 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Loads detailed information for a specific cocktail.
+     *
+     * @param cocktailId The ID of the cocktail to load details for.
+     */
     private fun loadCocktailDetails(cocktailId: String) {
         _uiState.value = _uiState.value.copy(isLoadingDetails = true)
 
@@ -111,14 +158,27 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Clears the currently selected cocktail.
+     */
     fun clearSelection() {
         _uiState.value = _uiState.value.copy(selectedCocktail = null)
     }
 
+    /**
+     * Updates the current search query without triggering a search.
+     *
+     * @param query The new search query.
+     */
     fun updateSearchQuery(query: String) {
         _uiState.value = _uiState.value.copy(searchQuery = query)
     }
 
+    /**
+     * Searches for cocktails that contain a specific ingredient.
+     *
+     * @param ingredient The ingredient to search for.
+     */
     fun searchCocktailsByIngredient(ingredient: String) {
         _uiState.value = _uiState.value.copy(
             searchQuery = ingredient,
@@ -136,6 +196,9 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Loads all favorite cocktails from local storage.
+     */
     fun loadFavorites() {
         _uiState.value = _uiState.value.copy(isLoadingFavorites = true)
 
@@ -149,6 +212,13 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Toggles the favorite status of a cocktail.
+     * If the cocktail is already a favorite, it will be removed.
+     * Otherwise, it will be added to favorites.
+     *
+     * @param cocktail The cocktail to toggle.
+     */
     fun toggleFavorite(cocktail: Cocktail) {
         viewModelScope.launch {
             try {
@@ -169,10 +239,19 @@ class CocktailViewModel(
         }
     }
 
+    /**
+     * Checks if a cocktail is marked as favorite.
+     *
+     * @param cocktailId The ID of the cocktail to check.
+     * @return A Flow emitting true if the cocktail is a favorite, false otherwise.
+     */
     fun isFavorite(cocktailId: String): Flow<Boolean> {
         return favoritesRepository.isFavorite(cocktailId)
     }
 
+    /**
+     * Removes all cocktails from favorites.
+     */
     fun clearAllFavorites() {
         viewModelScope.launch {
             try {

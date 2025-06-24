@@ -3,6 +3,22 @@ package com.darkjesus.shakeit.data.model
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
+/**
+ * Data class representing a cocktail from the API.
+ *
+ * This class maps the JSON response from the cocktail database API to a Kotlin object.
+ * It includes all details about a cocktail including its name, ingredients, measures, and preparation instructions.
+ *
+ * @property id The unique identifier of the cocktail.
+ * @property name The name of the cocktail.
+ * @property imageUrl URL to the image of the cocktail.
+ * @property category The category of the cocktail (e.g., "Ordinary Drink", "Cocktail", etc.).
+ * @property instructions Step-by-step instructions on how to prepare the cocktail.
+ * @property alcoholic Indicates whether the cocktail contains alcohol (e.g., "Alcoholic", "Non alcoholic").
+ * @property glass The type of glass recommended for serving the cocktail.
+ * @property ingredient1 - ingredient15 The ingredients used in the cocktail.
+ * @property measure1 - measure15 The corresponding measurements for each ingredient.
+ */
 @JsonClass(generateAdapter = true)
 data class Cocktail(
     @Json(name = "idDrink") val id: String,
@@ -46,6 +62,12 @@ data class Cocktail(
     @Json(name = "strMeasure14") val measure14: String? = null,
     @Json(name = "strMeasure15") val measure15: String? = null
 ) {
+    /**
+     * Returns a list of all non-empty ingredients in the cocktail.
+     *
+     * This property filters out null or empty ingredient values and returns only
+     * the actual ingredients used in the cocktail.
+     */
     val ingredients: List<String>
         get() = listOfNotNull(
             ingredient1, ingredient2, ingredient3, ingredient4, ingredient5,
@@ -53,6 +75,12 @@ data class Cocktail(
             ingredient11, ingredient12, ingredient13, ingredient14, ingredient15
         ).filter { it.isNotEmpty() }
 
+    /**
+     * Returns a list of all non-empty measures in the cocktail.
+     *
+     * This property filters out null or empty measure values and returns only
+     * the actual measurements used in the cocktail.
+     */
     val measures: List<String>
         get() = listOfNotNull(
             measure1, measure2, measure3, measure4, measure5,
@@ -60,6 +88,13 @@ data class Cocktail(
             measure11, measure12, measure13, measure14, measure15
         ).filter { it.isNotEmpty() }
 
+    /**
+     * Returns a list of pairs containing each ingredient with its corresponding measure.
+     *
+     * This property combines the ingredients and measures into pairs, making it easier
+     * to display them together. If a measure is not available for an ingredient,
+     * the second value in the pair will be null.
+     */
     val ingredientsWithMeasures: List<Pair<String, String?>>
         get() {
             val ingredientsList = ingredients

@@ -4,6 +4,22 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.darkjesus.shakeit.data.model.Cocktail
 
+/**
+ * Room entity representing a favorite cocktail in the database.
+ *
+ * Contains simplified data structure optimized for storage, with conversion
+ * methods to and from the Cocktail model.
+ *
+ * @property id Unique identifier for the cocktail, used as primary key.
+ * @property name Name of the cocktail.
+ * @property imageUrl URL of the cocktail image, can be null.
+ * @property category Category of the cocktail, can be null.
+ * @property instructions Preparation instructions, can be null.
+ * @property alcoholic Indicates if the cocktail contains alcohol, can be null.
+ * @property glass Type of glass recommended for serving, can be null.
+ * @property ingredients Comma-separated list of ingredients.
+ * @property measures Comma-separated list of ingredient measures.
+ */
 @Entity(tableName = "favorite_cocktails")
 data class FavoriteCocktail(
     @PrimaryKey val id: String,
@@ -16,6 +32,11 @@ data class FavoriteCocktail(
     val ingredients: String = "",
     val measures: String = ""
 ) {
+    /**
+     * Converts this database entity to a Cocktail model.
+     *
+     * @return A Cocktail object with the data from this entity.
+     */
     fun toCocktail(): Cocktail {
         val ingredientsList = if (ingredients.isNotEmpty()) {
             ingredients.split(",").map { it.trim() }
@@ -67,6 +88,12 @@ data class FavoriteCocktail(
     }
 
     companion object {
+        /**
+         * Creates a FavoriteCocktail entity from a Cocktail model.
+         *
+         * @param cocktail The Cocktail model to convert.
+         * @return A FavoriteCocktail entity containing the data from the Cocktail.
+         */
         fun fromCocktail(cocktail: Cocktail): FavoriteCocktail {
             return FavoriteCocktail(
                 id = cocktail.id,

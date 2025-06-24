@@ -84,7 +84,7 @@ fun SearchScreen(
                     textAlign = TextAlign.Center
                 )
                 Text(
-                    text = "Incredient",
+                    text = "Ingredient",
                     modifier = Modifier
                         .weight(1f)
                         .background(

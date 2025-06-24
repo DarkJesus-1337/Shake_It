@@ -1,8 +1,6 @@
 package com.darkjesus.shakeit.ui.composables
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -41,7 +39,6 @@ import com.darkjesus.shakeit.data.model.Cocktail
 import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
 import org.koin.androidx.compose.koinViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CocktailCard(
     cocktail: Cocktail,

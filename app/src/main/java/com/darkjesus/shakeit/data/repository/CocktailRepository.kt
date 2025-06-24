@@ -5,10 +5,24 @@ import com.darkjesus.shakeit.data.model.Cocktail
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
+/**
+ * Repository class that handles cocktail data operations.
+ *
+ * This class abstracts the data sources and provides a clean API to the rest of the application
+ * for accessing cocktail data from the remote API.
+ *
+ * @property apiService The service used to make API calls to the cocktail database.
+ */
 class CocktailRepository(
     private val apiService: ApiService
 ) {
 
+    /**
+     * Searches for cocktails by name.
+     *
+     * @param name The name or part of the name to search for.
+     * @return A Flow emitting a list of cocktails matching the search criteria or an empty list if none found.
+     */
     fun searchCocktailsByName(name: String): Flow<List<Cocktail>> = flow {
         try {
             val response = apiService.searchCocktailsByName(name)
@@ -18,6 +32,12 @@ class CocktailRepository(
         }
     }
 
+    /**
+     * Searches for cocktails by their first letter.
+     *
+     * @param letter The first letter to search for.
+     * @return A Flow emitting a list of cocktails starting with the given letter or an empty list if none found.
+     */
     fun searchCocktailsByFirstLetter(letter: String): Flow<List<Cocktail>> = flow {
         try {
             val response = apiService.searchCocktailsByFirstLetter(letter)
@@ -27,6 +47,11 @@ class CocktailRepository(
         }
     }
 
+    /**
+     * Fetches a random cocktail from the API.
+     *
+     * @return A Flow emitting a random cocktail or null if the request fails.
+     */
     fun getRandomCocktail(): Flow<Cocktail?> = flow {
         try {
             val response = apiService.getRandomCocktail()
@@ -36,6 +61,12 @@ class CocktailRepository(
         }
     }
 
+    /**
+     * Searches for cocktails containing a specific ingredient.
+     *
+     * @param ingredient The ingredient to search for.
+     * @return A Flow emitting a list of cocktails containing the given ingredient or an empty list if none found.
+     */
     fun searchCocktailsByIngredient(ingredient: String): Flow<List<Cocktail>> = flow {
         try {
             val response = apiService.searchCocktailsByIngredient(ingredient)
@@ -46,6 +77,12 @@ class CocktailRepository(
         }
     }
 
+    /**
+     * Fetches a specific cocktail by its ID.
+     *
+     * @param id The unique identifier of the cocktail.
+     * @return A Flow emitting the cocktail with the given ID or null if not found.
+     */
     fun getCocktailById(id: String): Flow<Cocktail?> = flow {
         try {
             val response = apiService.getCocktailById(id)

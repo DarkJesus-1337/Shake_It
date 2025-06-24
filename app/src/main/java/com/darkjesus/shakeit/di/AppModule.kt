@@ -10,6 +10,15 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
+/**
+ * Koin module that provides all the dependencies for the application.
+ *
+ * This module defines how to create instances of various components including:
+ * - API services
+ * - Databases
+ * - Repositories
+ * - ViewModels
+ */
 val appModule = module {
     single { CocktailAPI.retrofitService }
 
