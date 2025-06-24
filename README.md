@@ -1,4 +1,4 @@
-# 🍹 Shake It!
+# ![ShakeItLogo](app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.webp)
 
 **Shake It!** ist eine einfache App, die dir Cocktail-Rezepte vorschlägt – direkt aus der [TheCocktailDB API](https://www.thecocktaildb.com/api.php).
 
