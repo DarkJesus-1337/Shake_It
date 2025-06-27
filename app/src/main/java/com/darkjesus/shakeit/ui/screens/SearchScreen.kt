@@ -89,7 +89,18 @@ fun SearchScreen(
 
     var isDropdownExpanded by remember { mutableStateOf(false) }
     var selectedIngredient by remember { mutableStateOf("") }
+    var ingredientSearchQuery by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
+
+    val filteredIngredients = remember(ingredientSearchQuery, uiState.ingredients) {
+        if (ingredientSearchQuery.isEmpty()) {
+            uiState.ingredients
+        } else {
+            uiState.ingredients.filter {
+                it.contains(ingredientSearchQuery, ignoreCase = true)
+            }
+        }
+    }
 
     Scaffold { paddingValues ->
         Column(
@@ -230,7 +241,12 @@ fun SearchScreen(
                                 )
                             },
                             trailingIcon = {
-                                IconButton(onClick = { isDropdownExpanded = !isDropdownExpanded }) {
+                                IconButton(onClick = {
+                                    isDropdownExpanded = !isDropdownExpanded
+                                    if (isDropdownExpanded) {
+                                        ingredientSearchQuery = ""
+                                    }
+                                }) {
                                     Icon(
                                         if (isDropdownExpanded) Icons.Default.KeyboardArrowUp
                                         else Icons.Default.KeyboardArrowDown,
@@ -247,9 +263,27 @@ fun SearchScreen(
                             onDismissRequest = { isDropdownExpanded = false },
                             modifier = Modifier
                                 .fillMaxWidth(0.9f)
-                                .verticalScroll(scrollState)
                                 .height(300.dp)
                         ) {
+                            OutlinedTextField(
+                                value = ingredientSearchQuery,
+                                onValueChange = { ingredientSearchQuery = it },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                placeholder = { Text("Filter ingredients") },
+                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                                trailingIcon = {
+                                    if (ingredientSearchQuery.isNotEmpty()) {
+                                        IconButton(onClick = { ingredientSearchQuery = "" }) {
+                                            Icon(Icons.Default.Clear, contentDescription = "Clear")
+                                        }
+                                    }
+                                },
+                                shape = RoundedCornerShape(8.dp),
+                                singleLine = true
+                            )
+
                             if (uiState.isLoadingIngredients) {
                                 Box(
                                     modifier = Modifier
@@ -260,16 +294,35 @@ fun SearchScreen(
                                     CircularProgressIndicator()
                                 }
                             } else {
-                                uiState.ingredients.forEach { ingredient ->
-                                    DropdownMenuItem(
-                                        text = { Text(ingredient) },
-                                        onClick = {
-                                            selectedIngredient = ingredient
-                                            viewModel.updateSearchQuery(ingredient)
-                                            viewModel.searchCocktailsByIngredient(ingredient)
-                                            isDropdownExpanded = false
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .verticalScroll(scrollState)
+                                ) {
+                                    Column {
+                                        filteredIngredients.forEach { ingredient ->
+                                            DropdownMenuItem(
+                                                text = { Text(ingredient) },
+                                                onClick = {
+                                                    selectedIngredient = ingredient
+                                                    viewModel.updateSearchQuery(ingredient)
+                                                    viewModel.searchCocktailsByIngredient(ingredient)
+                                                    isDropdownExpanded = false
+                                                }
+                                            )
                                         }
-                                    )
+
+                                        if (filteredIngredients.isEmpty() && ingredientSearchQuery.isNotEmpty()) {
+                                            Text(
+                                                text = "No matching ingredients found",
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(16.dp),
+                                                textAlign = TextAlign.Center,
+                                                color = MaterialTheme.colorScheme.error
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

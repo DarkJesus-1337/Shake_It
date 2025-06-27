@@ -67,8 +67,8 @@ fun CocktailGrid(
         items(cocktails) { cocktail ->
             var showFavoriteIcon by remember { mutableStateOf(false) }
 
-            // Beobachte den Favoriten-Status
-            val isFavorite by viewModel?.isFavorite(cocktail.id)?.collectAsState(initial = false) ?: remember { mutableStateOf(false) }
+            val isFavorite by viewModel?.isFavorite(cocktail.id)?.collectAsState(initial = false)
+                ?: remember { mutableStateOf(false) }
 
             Card(
                 modifier = Modifier
