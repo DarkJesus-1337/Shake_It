@@ -1,5 +1,6 @@
 package com.darkjesus.shakeit.data.api
 
+import com.darkjesus.shakeit.data.model.IngredientListResponse
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import retrofit2.Retrofit
@@ -70,6 +71,15 @@ interface ApiService {
      */
     @GET("lookup.php")
     suspend fun getCocktailById(@Query("i") id: String): CocktailResponse
+
+    /**
+     * Fetches the list of all available ingredients from the API.
+     *
+     * @param type The type of list to fetch, default is "list" for ingredients.
+     * @return A response containing a list of ingredients.
+     */
+    @GET("list.php")
+    suspend fun getAllIngredients(@Query("i") type: String = "list"): IngredientListResponse
 }
 
 /**

@@ -24,7 +24,7 @@ enum class TabItem(
 ) {
     COD(
         route = CocktailOfTheDayRoute,
-        tabTitle = "Cocktail of the Day",
+        tabTitle = "Cocktail of\n   the Day",
         tabIcon = R.drawable.cod
     ),
     SEARCH(

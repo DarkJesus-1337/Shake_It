@@ -28,6 +28,15 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.darkjesus.shakeit.utils.IngredientImageUtils
 
+/**
+ * A composable that displays an ingredient with its measurement.
+ *
+ * This component shows the ingredient name and optional measurement information in a card layout.
+ * It also displays an image of the ingredient loaded from the Cocktail DB API.
+ *
+ * @param ingredient The name of the ingredient to display.
+ * @param measure The measurement of the ingredient (e.g., "2 oz"), can be null if no measurement is available.
+ */
 @Composable
 fun IngredientItem(ingredient: String, measure: String?) {
     Card(

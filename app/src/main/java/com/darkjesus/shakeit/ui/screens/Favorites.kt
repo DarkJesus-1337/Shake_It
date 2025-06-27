@@ -1,13 +1,17 @@
 package com.darkjesus.shakeit.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -16,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -32,12 +37,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.darkjesus.shakeit.R
 import com.darkjesus.shakeit.ui.composables.CocktailDetailBottomSheet
 import com.darkjesus.shakeit.ui.composables.CocktailList
 import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
+import com.darkjesus.shakeit.ui.viewmodel.ViewMode
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,12 +74,25 @@ fun FavoritesScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                    .padding(bottom = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_launcher),
+                    contentScale = ContentScale.Crop,
+                    contentDescription = "App Logo",
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape)
+                )
+
+                Spacer(
+                    modifier = Modifier.size(16.dp)
+                )
+
                 Text(
-                    text = "❤️ Your Favorite Cocktails",
+                    text = "Favorite Cocktails",
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary,
@@ -77,20 +100,32 @@ fun FavoritesScreen(
                 )
 
                 if (uiState.favorites.isNotEmpty() && !uiState.isLoadingFavorites) {
-                    OutlinedButton(
-                        onClick = { showDeleteDialog = true },
-                        modifier = Modifier.padding(start = 8.dp)
-                    ) {
+                    IconButton(onClick = { viewModel.toggleViewMode() }) {
                         Icon(
-                            imageVector = Icons.Outlined.Delete,
-                            contentDescription = "Clear all favorites"
-                        )
-                        Text(
-                            text = "Clear All",
-                            modifier = Modifier.padding(start = 4.dp)
+                            painter = painterResource(
+                                if (uiState.viewMode == ViewMode.LIST)
+                                    R.drawable.grid_view else R.drawable.view_list
+                            ),
+                            contentDescription = "Toggle view mode"
                         )
                     }
                 }
+            }
+
+            OutlinedButton(
+                onClick = { showDeleteDialog = true },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Delete,
+                    contentDescription = "Clear all favorites"
+                )
+                Text(
+                    text = "Clear All",
+                    modifier = Modifier.padding(start = 4.dp)
+                )
             }
 
             when {
@@ -128,7 +163,9 @@ fun FavoritesScreen(
                         onCocktailClick = { cocktail ->
                             viewModel.selectCocktail(cocktail)
                             showBottomSheet = true
-                        }
+                        },
+                        viewModel = viewModel,
+                        viewMode = uiState.viewMode
                     )
                 }
             }

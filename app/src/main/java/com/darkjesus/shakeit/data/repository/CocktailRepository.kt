@@ -92,4 +92,22 @@ class CocktailRepository(
             emit(null)
         }
     }
+
+    /**
+     * Fetches all available ingredients from the API.
+     *
+     * This function retrieves the complete list of ingredients from the Cocktail DB API.
+     * The ingredients are sorted alphabetically for easier browsing.
+     *
+     * @return A Flow emitting a list of ingredient names or an empty list if the request fails.
+     */
+    fun getAllIngredients(): Flow<List<String>> = flow {
+        try {
+            val response = apiService.getAllIngredients()
+            val ingredients = response.drinks?.map { it.strIngredient1 }?.sorted() ?: emptyList()
+            emit(ingredients)
+        } catch (e: Exception) {
+            emit(emptyList())
+        }
+    }
 }

@@ -13,6 +13,14 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
+ * Enum representing the different view modes.
+ */
+enum class ViewMode {
+    LIST,
+    GRID
+}
+
+/**
  * Data class representing the UI state for cocktail-related screens.
  *
  * @property cocktails List of cocktails currently displayed.
@@ -23,16 +31,22 @@ import kotlinx.coroutines.launch
  * @property isLoadingDetails Indicates whether detailed cocktail information is being loaded.
  * @property favorites List of favorite cocktails.
  * @property isLoadingFavorites Indicates whether favorites are currently being loaded.
+ * @property viewMode The current view mode (list or grid).
+ * @property ingredients List of all available ingredients for ingredient picker.
+ * @property isLoadingIngredients Indicates whether ingredients are currently being loaded.
  */
 data class CocktailUiState(
     val cocktails: List<Cocktail> = emptyList(),
     val selectedCocktail: Cocktail? = null,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val searchQuery: String = "",
+    var searchQuery: String = "",
     val isLoadingDetails: Boolean = false,
     val favorites: List<Cocktail> = emptyList(),
-    val isLoadingFavorites: Boolean = false
+    val isLoadingFavorites: Boolean = false,
+    val viewMode: ViewMode = ViewMode.LIST,
+    val ingredients: List<String> = emptyList(),
+    val isLoadingIngredients: Boolean = false
 )
 
 /**
@@ -58,6 +72,7 @@ class CocktailViewModel(
     init {
         getRandomCocktail()
         loadFavorites()
+        loadAllIngredients()
     }
 
     /**
@@ -260,6 +275,33 @@ class CocktailViewModel(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to clear favorites: ${e.message}"
+                )
+            }
+        }
+    }
+
+    /**
+     * Toggles between list and grid view modes.
+     */
+    fun toggleViewMode() {
+        val newMode = if (_uiState.value.viewMode == ViewMode.LIST) ViewMode.GRID else ViewMode.LIST
+        _uiState.value = _uiState.value.copy(viewMode = newMode)
+    }
+
+    /**
+     * Loads all available ingredients from the API.
+     *
+     * Fetches the complete list of ingredients from the API and updates the UI state.
+     * This list is used to populate the ingredient picker in the search screen.
+     */
+    fun loadAllIngredients() {
+        _uiState.value = _uiState.value.copy(isLoadingIngredients = true)
+
+        viewModelScope.launch {
+            cocktailRepository.getAllIngredients().collect { ingredients ->
+                _uiState.value = _uiState.value.copy(
+                    ingredients = ingredients,
+                    isLoadingIngredients = false
                 )
             }
         }

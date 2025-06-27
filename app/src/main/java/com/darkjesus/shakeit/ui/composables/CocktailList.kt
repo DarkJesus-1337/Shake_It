@@ -1,30 +1,35 @@
 package com.darkjesus.shakeit.ui.composables
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.Modifier
 import com.darkjesus.shakeit.data.model.Cocktail
 import com.darkjesus.shakeit.ui.viewmodel.CocktailViewModel
-import org.koin.androidx.compose.koinViewModel
+import com.darkjesus.shakeit.ui.viewmodel.ViewMode
 
 @Composable
 fun CocktailList(
+    modifier: Modifier = Modifier,
     cocktails: List<Cocktail>,
     onCocktailClick: (Cocktail) -> Unit,
-    viewModel: CocktailViewModel = koinViewModel()
+    viewModel: CocktailViewModel? = null,
+    viewMode: ViewMode = ViewMode.LIST
 ) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(cocktails) { cocktail ->
-            CocktailCard(
-                cocktail = cocktail,
-                onClick = { onCocktailClick(cocktail) },
-                onFavoriteToggle = { viewModel.toggleFavorite(it) }
+    when (viewMode) {
+        ViewMode.LIST -> {
+            CocktailListView(
+                cocktails = cocktails,
+                onCocktailClick = onCocktailClick,
+                viewModel = viewModel,
+                modifier = modifier
+            )
+        }
+
+        ViewMode.GRID -> {
+            CocktailGrid(
+                cocktails = cocktails,
+                onCocktailClick = onCocktailClick,
+                viewModel = viewModel,
+                modifier = modifier
             )
         }
     }
