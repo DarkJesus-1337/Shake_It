@@ -445,5 +445,9 @@ fun SearchScreen(
                 }
             }
         }
+
+        if (uiState.viewMode == ViewMode.LIST) {
+            viewModel.toggleViewMode()
+        }
     }
 }

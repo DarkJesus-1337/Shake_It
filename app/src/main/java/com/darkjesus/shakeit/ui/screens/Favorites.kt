@@ -62,6 +62,9 @@ fun FavoritesScreen(
 
     LaunchedEffect(Unit) {
         viewModel.loadFavorites()
+        if (uiState.viewMode == ViewMode.LIST) {
+            viewModel.toggleViewMode()
+        }
     }
 
     Scaffold { paddingValues ->
